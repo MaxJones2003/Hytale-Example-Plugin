@@ -1,5 +1,6 @@
 package com.getfriedpig.golem.ui;
 
+import com.getfriedpig.golem.fileio.FileManager;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
@@ -7,6 +8,8 @@ import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.protocol.packets.interface_.CustomPageLifetime;
 import com.hypixel.hytale.protocol.packets.interface_.CustomUIEventBindingType;
+import com.hypixel.hytale.protocol.packets.interface_.Page;
+import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.entity.entities.player.pages.InteractiveCustomUIPage;
 import com.hypixel.hytale.server.core.ui.builder.EventData;
 import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
@@ -18,6 +21,7 @@ public class EditorPage extends InteractiveCustomUIPage<EditorPage.EditorEventDa
 
     public static class EditorEventData {
         public String action;
+        public String fileName;
         public String code;
 
         public static final BuilderCodec<EditorEventData> CODEC =
@@ -26,15 +30,20 @@ public class EditorPage extends InteractiveCustomUIPage<EditorPage.EditorEventDa
                                 (EditorEventData o, String v) -> o.action = v,
                                 (EditorEventData o) -> o.action)
                         .add()
+                        .append(new KeyedCodec<>("@FileName", Codec.STRING),
+                                (EditorEventData o, String V) -> o.fileName = V,
+                                (EditorEventData o) -> o.fileName)
+                        .add()
                         .append(new KeyedCodec<>("@Code", Codec.STRING),
                                 (EditorEventData o, String v) -> o.code = v,
                                 (EditorEventData o) -> o.code)
                         .add()
                         .build();
     }
-
+    PlayerRef playerRef;
     public EditorPage(PlayerRef playerRef) {
         super(playerRef, CustomPageLifetime.CanDismissOrCloseThroughInteraction, EditorEventData.CODEC);
+        this.playerRef = playerRef;
     }
 
     @Override
@@ -51,6 +60,7 @@ public class EditorPage extends InteractiveCustomUIPage<EditorPage.EditorEventDa
                 "#Save",
                 new EventData()
                         .append("Action", "Save")
+                        .append("@FileName", "#FileName.Value")
                         .append("@Code", "#CodeEditor.Value")
         );
     }
@@ -61,13 +71,17 @@ public class EditorPage extends InteractiveCustomUIPage<EditorPage.EditorEventDa
             Store<EntityStore> store,
             EditorEventData data
     ) {
-        if ("Save".equals(data.action)) {
-            String code = data.code;
+        Player player = store.getComponent(ref, Player.getComponentType());
+        if (player == null) return;
 
-            // TODO: Save logic here
+        System.out.println("Handling data event: " + data);
+        if ("Save".equals(data.action)) {
+            String fileName = data.fileName;
+            String code = data.code;
+            java.util.UUID id = playerRef.getUuid();
+            FileManager.FileWriteRequest(id, fileName, code);
         }
 
-        //Player player = store.getComponent(ref, Player.getComponentType());
-        //player.getPageManager().setPage(ref, store, Page.None);
+        player.getPageManager().setPage(ref, store, Page.None);
     }
 }
