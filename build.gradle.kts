@@ -1,9 +1,10 @@
 plugins {
+    java;
     `maven-publish`
     id("hytale-mod") version "0.+"
 }
 
-group = "com.example"
+group = "com.getfriedpig"
 version = "0.1.0"
 val javaVersion = 25
 
@@ -17,6 +18,10 @@ repositories {
 dependencies {
     compileOnly(libs.jetbrains.annotations)
     compileOnly(libs.jspecify)
+    compileOnly(files("libraries/HytaleServer.jar"))
+    testImplementation(platform("org.junit:junit-bom:6.0.0"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 hytale {
@@ -36,6 +41,18 @@ java {
     }
 
     withSourcesJar()
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
+
+tasks.jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    archiveBaseName.set("GolemPlugin")
+    archiveVersion.set("1.0.0")
+
+    from("src/main/resources")
 }
 
 tasks.named<ProcessResources>("processResources") {

@@ -1,0 +1,26 @@
+package com.getfriedpig.golem.fileio;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+public class FileManager {
+    public static final String MasterFolder = "GolemScripts";
+
+    public static void FileWriteRequest() {
+
+    }
+
+    public static String FileReadRequest() {
+        return null;
+    }
+
+    private static String readFileAsString(String filename) {
+        try {
+            return new String(Files.readAllBytes(Paths.get(filename)));
+        } catch (IOException e) {
+            System.err.println("Error reading file: " + e.getMessage());
+            return null;
+        }
+    }
+}
