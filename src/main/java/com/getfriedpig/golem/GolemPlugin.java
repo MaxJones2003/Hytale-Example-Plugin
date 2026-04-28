@@ -13,16 +13,10 @@ public class GolemPlugin extends JavaPlugin {
 
     @Override
     public void setup() {
+        System.out.println("Golem plugin loaded!");
         super.setup();
         var commandRegistry = getCommandRegistry();
         commandRegistry.registerCommand(new LoxTestCommand("loxtest", "Tests the parser/interpreter"));
         commandRegistry.registerCommand(new LoxTextEditorCommand());
-
-        /*0OpenCustomUIInteraction.registerCustomPageSupplier(this, EditorPage.EditorPageEventData.class, "EditorPage",
-                (PlayerRef playerRef, ) -> {
-                    // Create and return the page instance
-                    // Return null to cancel opening the page
-                    return new EditorPage(playerRef);
-                });*/
     }
 }

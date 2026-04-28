@@ -10,6 +10,16 @@ val javaVersion = 25
 
 repositories {
     mavenCentral()
+    exclusiveContent {
+        forRepository {
+            maven("https://www.cursemaven.com") {
+                name = "Cursemaven"
+            }
+        }
+        filter {
+            includeGroup("curse.maven")
+        }
+    }
     maven("https://maven.hytale-modding.info/releases") {
         name = "HytaleModdingReleases"
     }
@@ -19,10 +29,14 @@ dependencies {
     compileOnly(libs.jetbrains.annotations)
     compileOnly(libs.jspecify)
     compileOnly(files("libraries/HytaleServer.jar"))
+    compileOnly("curse.maven:hyui-1431415:7820303")
     testImplementation(platform("org.junit:junit-bom:6.0.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
 }
+
+
 
 hytale {
     // uncomment if you want to add the Assets.zip file to your external libraries;

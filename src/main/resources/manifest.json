@@ -4,5 +4,8 @@
   "Version": "1.0.0",
   "ServerVersion": "*",
   "Main": "com.getfriedpig.golem.GolemPlugin",
-  "IncludesAssetPack": true
+  "IncludesAssetPack": true,
+  "Dependencies": {
+    "Ellie:HyUI": "*"
+  }
 }

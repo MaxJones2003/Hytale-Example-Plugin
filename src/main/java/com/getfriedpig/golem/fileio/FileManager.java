@@ -5,12 +5,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.UUID;
 public class FileManager {
     public static final String MasterFolder = "GolemScripts";
 
     public static String FileReadRequest(UUID playerId, String fileName) {
-        File file = new File(MasterFolder, playerId + "/" + fileName + ".txt");
+        System.out.println("FileReadRequest: " + playerId + " " + fileName);
+        File file = new File(MasterFolder, playerId + "/" + fileName);
         if (file.exists()) {
             return readFileAsString(file.getPath());
         }
@@ -48,6 +50,23 @@ public class FileManager {
         } catch (IOException e) {
             System.err.println("Error writing file: " + e.getMessage());
         }
+    }
+
+    public static ArrayList<String> getPlayerFiles(UUID playerId) {
+        File folder = new File(MasterFolder, playerId.toString());
+        if (!folder.exists()) {
+            folder.mkdirs();
+        }
+        ArrayList<String> files = new ArrayList<>();
+        File[] folderFiles = folder.listFiles();
+        if (folderFiles != null) {
+            for (File file : folderFiles) {
+                if (file.isFile()) {
+                    files.add(file.getName());
+                }
+            }
+        }
+        return files;
     }
 
 }
