@@ -1,43 +1,29 @@
 package com.getfriedpig.golem.lox;
 
+import com.hypixel.hytale.server.core.entity.entities.Player;
+
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 public class Lox {
 	static boolean hadError = false;
 	static boolean hadRuntimeError = false;
-	private static final Interpreter interpreter = new Interpreter();
-	
-	/*public static void main(String[] args) throws IOException {
-		if (args.length > 1) {
-			System.out.println("Usage: jlox [script]");
-			System.exit(64);
-		}
-		runFile("src/ScannerTest/test1.txt");
+	private static Interpreter interpreter;
 
-	}
-	
-	private static void runFile(String path) throws IOException {
+
+
+	public static void runFile(String path, Interpreter.InterpreterContext context) throws IOException {
 		byte[] bytes = Files.readAllBytes(Paths.get(path));
-		run(new String(bytes, Charset.defaultCharset()));
+		run(new String(bytes, Charset.defaultCharset()), context);
 		
 		if (hadError) System.exit(65);
 		if (hadRuntimeError) System.exit(70);
 	}
 	
-	private static void runPrompt() throws IOException {
-	    InputStreamReader input = new InputStreamReader(System.in);
-	    BufferedReader reader = new BufferedReader(input);
-
-	    for (;;) { 
-	      System.out.print("> ");
-	      String line = reader.readLine();
-	      if (line == null) break;
-	      run(line);
-	      hadError = false;
-	    }
-	  }*/
-	
-	public static void run(String source) {
+	public static void run(String source, Interpreter.InterpreterContext context) {
 		Scanner scanner = new Scanner(source);
 		List<Token> tokens = scanner.scanTokens();
 		
@@ -46,7 +32,7 @@ public class Lox {
 
 	    // Stop if there was a syntax error.
 	    if (hadError) return;
-	    
+	    interpreter = new Interpreter(context);
 	    Resolver resolver = new Resolver(interpreter);
 	    resolver.resolve(statements);
 	    

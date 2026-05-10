@@ -11,7 +11,7 @@ public class FileManager {
     public static final String MasterFolder = "GolemScripts";
 
     public static String FileReadRequest(UUID playerId, String fileName) {
-        System.out.println("FileReadRequest: " + playerId + " " + fileName);
+        fileName = fileName.split("\\.")[0] + ".txt";
         File file = new File(MasterFolder, playerId + "/" + fileName);
         if (file.exists()) {
             return readFileAsString(file.getPath());
@@ -52,6 +52,10 @@ public class FileManager {
         }
     }
 
+    public static String getFilePath(UUID playerId, String fileName) {
+        return MasterFolder + "/" + playerId + "/" + fileName.split("\\.")[0] + ".txt";
+    }
+
     public static ArrayList<String> getPlayerFiles(UUID playerId) {
         File folder = new File(MasterFolder, playerId.toString());
         if (!folder.exists()) {
@@ -62,7 +66,7 @@ public class FileManager {
         if (folderFiles != null) {
             for (File file : folderFiles) {
                 if (file.isFile()) {
-                    files.add(file.getName());
+                    files.add(file.getName().split("\\.")[0]);
                 }
             }
         }

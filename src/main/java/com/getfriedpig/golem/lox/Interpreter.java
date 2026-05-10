@@ -1,33 +1,42 @@
 package com.getfriedpig.golem.lox;
 
+import com.hypixel.hytale.component.Ref;
+import com.hypixel.hytale.component.Store;
+import com.hypixel.hytale.server.core.entity.entities.Player;
+import com.hypixel.hytale.server.core.universe.PlayerRef;
+import com.hypixel.hytale.server.core.universe.world.World;
+import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
+    public static class InterpreterContext {
+        public final Player player;
+        public final PlayerRef playerRef;
+        public final Store<EntityStore> store;
+        public final Ref<EntityStore> ref;
+        public final World world;
+
+        public InterpreterContext(Player player, PlayerRef playerRef, Store<EntityStore> store, Ref<EntityStore> ref, World world) {
+            this.player = player;
+            this.playerRef = playerRef;
+            this.store = store;
+            this.ref = ref;
+            this.world = world;
+        }
+    }
     /** holds pre-defined native functions **/
     final Environment GLOBALS = new Environment();
     Environment environment = GLOBALS;
     private final Map<Expr, Integer> locals = new HashMap<>();
-
-    Interpreter() {
-        GLOBALS.define("clock", new LoxCallable() {
-            @Override
-            public Object call(Interpreter interpreter, List<Object> arguments) {
-                return (double) System.currentTimeMillis() / 1000.0;
-            }
-
-            @Override
-            public int arity() {
-                return 0;
-            }
-
-            @Override
-            public String toString() {
-                return "<native fn>";
-            }
-        });
+    public final InterpreterContext context;
+    Interpreter(InterpreterContext context) {
+        this.context = context;
+        FFI ffi = new FFI(GLOBALS);
     }
 
     @Override
