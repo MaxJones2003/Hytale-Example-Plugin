@@ -18,6 +18,7 @@ public class FileManager {
         }
         return null;
     }
+
     private static String readFileAsString(String filename) {
         try {
             return new String(Files.readAllBytes(Paths.get(filename)));

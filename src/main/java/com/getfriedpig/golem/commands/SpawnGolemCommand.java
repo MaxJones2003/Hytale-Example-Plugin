@@ -2,6 +2,7 @@ package com.getfriedpig.golem.commands;
 
 import com.getfriedpig.golem.ai.components.CommandQueueComponent;
 import com.getfriedpig.golem.ai.components.MovementStateComponent;
+import com.getfriedpig.golem.ai.components.ScriptInstanceComponent;
 import com.getfriedpig.golem.player.components.PlayerGolemsData;
 import com.hypixel.hytale.component.AddReason;
 import com.hypixel.hytale.component.Holder;
@@ -65,6 +66,8 @@ public class SpawnGolemCommand extends AbstractPlayerCommand {
         holder.addComponent(PersistentModel.getComponentType(), new PersistentModel(model.toReference()));
         holder.addComponent(ModelComponent.getComponentType(), new ModelComponent(model));
         holder.addComponent(Interactions.getComponentType(), new Interactions());
+
+        holder.addComponent(ScriptInstanceComponent.getComponentType(), new ScriptInstanceComponent());
         
         // Create movement state with direction matching player's look direction
         MovementStateComponent movementState = new MovementStateComponent();

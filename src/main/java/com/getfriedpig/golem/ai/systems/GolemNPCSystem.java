@@ -24,7 +24,6 @@ public class GolemNPCSystem extends HolderSystem<EntityStore> {
 
     @Override
     public void onEntityAdd(@NotNull Holder<EntityStore> holder, @NotNull AddReason reason, @NotNull Store<EntityStore> store) {
-        //System.out.println("Adding NPC network id");
         if (!holder.getArchetype().contains(NetworkId.getComponentType())) {
             holder.addComponent(NetworkId.getComponentType(), new NetworkId(store.getExternalData().takeNextNetworkId()));
         }

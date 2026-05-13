@@ -1,0 +1,27 @@
+{
+  "name": "golem-script-compiler",
+  "version": "0.1.0",
+  "description": "TypeScript to Golem bytecode compiler",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "compile": "node dist/index.js"
+  },
+  "keywords": [
+    "hytale",
+    "scripting",
+    "typescript",
+    "bytecode"
+  ],
+  "author": "GetFriedPig",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "ts-morph": "^20.0.0"
+  }
+}

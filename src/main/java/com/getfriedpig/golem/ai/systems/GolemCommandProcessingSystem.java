@@ -51,9 +51,7 @@ public class GolemCommandProcessingSystem extends EntityTickingSystem<EntityStor
         // Load next command from queue
         if (cmdQ.hasCommand()) {
             state.activeCommand = cmdQ.popCommand();
-            System.out.println("[GolemCommandProcessing] Command selected: " + state.activeCommand);
             initializeStateForCommand(state, transform);
-            System.out.println("[GolemCommandProcessing] Command initialized at position: " + transform.getPosition());
         }
     }
 
@@ -69,9 +67,6 @@ public class GolemCommandProcessingSystem extends EntityTickingSystem<EntityStor
                 state.targetPosition.add(forward);
                 state.isMoving = true;
                 state.movementTime = 0f;
-                System.out.println("[GolemCommandProcessing] MovingForward (" + state.getDirectionName() + ")");
-                System.out.println("  Direction Vector: " + forward + " (Index: " + state.currentDirectionIndex + ")");
-                System.out.println("  Start: " + state.startPosition + " Target: " + state.targetPosition);
             }
 
             case MovingBackward -> {
@@ -81,7 +76,6 @@ public class GolemCommandProcessingSystem extends EntityTickingSystem<EntityStor
                 state.targetPosition.subtract(backward);
                 state.isMoving = true;
                 state.movementTime = 0f;
-                System.out.println("[GolemCommandProcessing] MovingBackward - Start: " + state.startPosition + " Target: " + state.targetPosition);
             }
 
             case TurningLeft -> {
@@ -89,7 +83,6 @@ public class GolemCommandProcessingSystem extends EntityTickingSystem<EntityStor
                 state.rotateLeft();
                 state.isRotating = true;
                 state.movementTime = 0f;
-                System.out.println("[GolemCommandProcessing] TurningLeft - " + getDirectionNameByIndex(oldIndex) + " -> " + state.getDirectionName());
             }
 
             case TurningRight -> {
@@ -97,11 +90,9 @@ public class GolemCommandProcessingSystem extends EntityTickingSystem<EntityStor
                 state.rotateRight();
                 state.isRotating = true;
                 state.movementTime = 0f;
-                System.out.println("[GolemCommandProcessing] TurningRight - " + getDirectionNameByIndex(oldIndex) + " -> " + state.getDirectionName());
             }
 
             case Idle -> {
-                System.out.println("[GolemCommandProcessing] Idle command processed");
                 state.activeCommand = null;
             }
         }

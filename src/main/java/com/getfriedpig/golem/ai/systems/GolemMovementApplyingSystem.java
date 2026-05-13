@@ -78,16 +78,13 @@ public class GolemMovementApplyingSystem extends EntityTickingSystem<EntityStore
         // Interpolate position
         Vector3d newPosition = lerpVector(state.startPosition, state.targetPosition, progress);
         transform.setPosition(newPosition);
-        
-        System.out.println("[GolemMovementApplying] Moving (" + state.activeCommand + ") Direction: " + state.getDirectionName() + " Vector: " + state.getCurrentDirection() + " progress: " + String.format("%.2f", progress * 100) + "% at position: " + newPosition);
-        
+
         // Check if movement is complete
         if (progress >= 1.0f) {
             transform.setPosition(state.targetPosition);  // Snap to exact target
             state.isMoving = false;
             state.movementTime = 0f;
             state.activeCommand = null;  // Command complete, ready for next
-            System.out.println("[GolemMovementApplying] Movement command completed: " + state.activeCommand + " at position: " + transform.getPosition());
         }
     }
 
@@ -120,16 +117,14 @@ public class GolemMovementApplyingSystem extends EntityTickingSystem<EntityStore
         HeadRotation headRotation = chunk.getComponent(index, HeadRotation.getComponentType());
         if (headRotation != null) {
             headRotation.setRotation(new com.hypixel.hytale.math.vector.Vector3f(0, newYaw, 0));
-            System.out.println("[GolemMovementApplying] HeadRotation updated to yaw: " + newYaw + " radians");
         } else {
-            System.out.println("[GolemMovementApplying] WARNING: HeadRotation not found");
+            //System.out.println("[GolemMovementApplying] WARNING: HeadRotation not found");
         }
         
         // Update body TransformComponent (body orientation) to match
         com.hypixel.hytale.math.vector.Vector3f bodyRotation = new com.hypixel.hytale.math.vector.Vector3f(0, newYaw, 0);
         transform.setRotation(bodyRotation);
-        System.out.println("[GolemMovementApplying] Rotation command completed: " + state.activeCommand + " now facing: " + state.getDirectionName() + " (yaw: " + newYaw + ")");
-        
+
         state.activeCommand = null;
     }
 

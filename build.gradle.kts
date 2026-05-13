@@ -28,6 +28,7 @@ repositories {
 dependencies {
     compileOnly(libs.jetbrains.annotations)
     compileOnly(libs.jspecify)
+    compileOnly(libs.gson)
     compileOnly(files("libraries/HytaleServer.jar"))
     compileOnly("curse.maven:hyui-1431415:7820303")
     testImplementation(platform("org.junit:junit-bom:6.0.0"))
