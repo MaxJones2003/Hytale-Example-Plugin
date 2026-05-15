@@ -162,6 +162,9 @@ public class BytecodeVM {
             case "DUP":
                 state.pushStack(state.peekStack());
                 break;
+            case "SWAP":
+                executeSwap();
+                break;
 
             // Variables
             case "LOAD_VAR":
@@ -169,6 +172,42 @@ public class BytecodeVM {
                 break;
             case "STORE_VAR":
                 executeStoreVar(instr);
+                break;
+
+            // New explicit variable operations
+            case "DECLARE":
+                executeDeclare(instr);
+                break;
+            case "ASSIGN":
+                executeAssign(instr);
+                break;
+            case "POSTINC":
+                executePostInc(instr);
+                break;
+            case "POSTDEC":
+                executePostDec(instr);
+                break;
+            case "PREINC":
+                executePreInc(instr);
+                break;
+            case "PREDEC":
+                executePreDec(instr);
+                break;
+
+            // Scope management
+            case "SCOPE_PUSH":
+                // TODO: Implement scope push when scope management is added
+                break;
+            case "SCOPE_POP":
+                // TODO: Implement scope pop when scope management is added
+                break;
+
+            // Control flow - loops
+            case "BREAK":
+                executeBreak();
+                break;
+            case "CONTINUE":
+                executeContinue();
                 break;
 
             // Arithmetic
@@ -267,6 +306,32 @@ public class BytecodeVM {
                 executeArrayNew(instr);
                 break;
 
+            // Classes
+            case "CLASS_DEF":
+                executeClassDef(instr);
+                break;
+            case "NEW":
+                executeNew(instr);
+                break;
+            case "THIS_LOAD":
+                executeThisLoad();
+                break;
+            case "PROP_GET":
+                executePropGet(instr);
+                break;
+            case "PROP_SET":
+                executePropSet(instr);
+                break;
+            case "METHOD_CALL":
+                executeMethodCall(instr);
+                break;
+            case "STATIC_CALL":
+                executeStaticCall(instr);
+                break;
+            case "SUPER_CALL":
+                executeSuperCall(instr);
+                break;
+
             default:
                 throw new Exception("Unknown opcode: " + instr.op);
         }
@@ -294,6 +359,78 @@ public class BytecodeVM {
     private void executeStoreVar(Instruction instr) {
         Object value = state.popStack();
         state.setLocal(instr.name, value);
+    }
+
+    private void executeDeclare(Instruction instr) {
+        // Declare variable: pop value and store it, don't push anything
+        Object value = state.popStack();
+        state.setLocal(instr.name, value);
+    }
+
+    private void executeAssign(Instruction instr) {
+        // Assign: pop value, store it, push the value back
+        Object value = state.popStack();
+        state.setLocal(instr.name, value);
+        state.pushStack(value);
+    }
+
+    private void executePostInc(Instruction instr) throws Exception {
+        // Postfix increment: yields old value
+        Object current = state.getLocal(instr.name);
+        double currentVal = toDouble(current);
+        double newVal = currentVal + 1;
+        state.setLocal(instr.name, newVal);
+        state.pushStack(currentVal);  // Push old value
+    }
+
+    private void executePostDec(Instruction instr) throws Exception {
+        // Postfix decrement: yields old value
+        Object current = state.getLocal(instr.name);
+        double currentVal = toDouble(current);
+        double newVal = currentVal - 1;
+        state.setLocal(instr.name, newVal);
+        state.pushStack(currentVal);  // Push old value
+    }
+
+    private void executePreInc(Instruction instr) throws Exception {
+        // Prefix increment: yields new value
+        Object current = state.getLocal(instr.name);
+        double currentVal = toDouble(current);
+        double newVal = currentVal + 1;
+        state.setLocal(instr.name, newVal);
+        state.pushStack(newVal);  // Push new value
+    }
+
+    private void executePreDec(Instruction instr) throws Exception {
+        // Prefix decrement: yields new value
+        Object current = state.getLocal(instr.name);
+        double currentVal = toDouble(current);
+        double newVal = currentVal - 1;
+        state.setLocal(instr.name, newVal);
+        state.pushStack(newVal);  // Push new value
+    }
+
+    private void executeSwap() throws Exception {
+        // Swap top two stack values
+        if (state.stackSize() < 2) {
+            throw new Exception("Stack underflow for SWAP");
+        }
+        Object top = state.popStack();
+        Object second = state.popStack();
+        state.pushStack(top);
+        state.pushStack(second);
+    }
+
+    private void executeBreak() throws Exception {
+        // TODO: Implement break with loop tracking
+        // For now, mark as unimplemented
+        throw new Exception("Break statement not yet implemented");
+    }
+
+    private void executeContinue() throws Exception {
+        // TODO: Implement continue with loop tracking
+        // For now, mark as unimplemented
+        throw new Exception("Continue statement not yet implemented");
     }
 
     private void executeBinOp(String op) throws Exception {
@@ -559,5 +696,169 @@ public class BytecodeVM {
         cloneVM.state = state.clone();
         
         return cloneVM;
+    }
+
+    // Class-related instruction handlers
+
+    private void executeClassDef(Instruction instr) throws Exception {
+        // CLASS_DEF instruction - just metadata, nothing to execute
+        // The class metadata is loaded when bytecode is loaded
+        // This is a placeholder for future class registration if needed
+    }
+
+    private void executeNew(Instruction instr) throws Exception {
+        // NEW: Create new instance
+        // Stack: [arg1, arg2, ...] -> [instance]
+        // instruction.classRef contains the class ID
+        // instruction.args contains the argument count
+
+        if (instr.classRef == null) {
+            throw new Exception("NEW instruction missing classRef");
+        }
+
+        int classId = instr.classRef;
+        int argCount = instr.args != null ? instr.args : 0;
+
+        // Pop arguments from stack
+        List<Object> args = new ArrayList<>();
+        for (int i = 0; i < argCount; i++) {
+            args.add(0, state.popStack()); // Reverse order
+        }
+
+        // Create new instance
+        ObjectInstance instance = new ObjectInstance(classId);
+
+        // Call constructor if it exists (would need class metadata to do this properly)
+        // For now, just push the instance
+        state.pushStack(instance);
+    }
+
+    private void executeThisLoad() throws Exception {
+        // THIS_LOAD: Push implicit this reference
+        if (state.thisObject == null) {
+            throw new Exception("'this' is not available in this context");
+        }
+        state.pushStack(state.thisObject);
+    }
+
+    private void executePropGet(Instruction instr) throws Exception {
+        // PROP_GET: Get property from object
+        // Stack: [object] -> [value]
+        Object obj = state.popStack();
+
+        if (!(obj instanceof ObjectInstance)) {
+            throw new Exception("Cannot get property from non-object: " + obj);
+        }
+
+        ObjectInstance instance = (ObjectInstance) obj;
+        String property = instr.property;
+
+        if (property == null) {
+            throw new Exception("PROP_GET instruction missing property name");
+        }
+
+        Object value = instance.getProperty(property);
+        state.pushStack(value);
+    }
+
+    private void executePropSet(Instruction instr) throws Exception {
+        // PROP_SET: Set property on object
+        // Stack: [object, value] -> []
+        Object value = state.popStack();
+        Object obj = state.popStack();
+
+        if (!(obj instanceof ObjectInstance)) {
+            throw new Exception("Cannot set property on non-object: " + obj);
+        }
+
+        ObjectInstance instance = (ObjectInstance) obj;
+        String property = instr.property;
+        String visibility = instr.visibility;
+
+        if (property == null) {
+            throw new Exception("PROP_SET instruction missing property name");
+        }
+
+        instance.setProperty(property, value, visibility);
+    }
+
+    private void executeMethodCall(Instruction instr) throws Exception {
+        // METHOD_CALL: Call instance method with this binding
+        // Stack: [this, arg1, arg2, ...] -> [result]
+        // This requires class and method metadata - placeholder implementation
+
+        if (instr.args == null) {
+            throw new Exception("METHOD_CALL instruction missing args count");
+        }
+
+        int argCount = instr.args;
+
+        // Pop arguments
+        List<Object> args = new ArrayList<>();
+        for (int i = 0; i < argCount; i++) {
+            args.add(0, state.popStack()); // Reverse order
+        }
+
+        // Pop this object
+        Object thisObj = state.popStack();
+
+        if (!(thisObj instanceof ObjectInstance)) {
+            throw new Exception("Cannot call method on non-object: " + thisObj);
+        }
+
+        // For now, just push null result
+        // Full implementation would look up method in class metadata and execute
+        state.pushStack(null);
+    }
+
+    private void executeStaticCall(Instruction instr) throws Exception {
+        // STATIC_CALL: Call static method
+        // Stack: [arg1, arg2, ...] -> [result]
+        // This requires class and method metadata - placeholder implementation
+
+        if (instr.args == null) {
+            throw new Exception("STATIC_CALL instruction missing args count");
+        }
+
+        int argCount = instr.args;
+
+        // Pop arguments
+        List<Object> args = new ArrayList<>();
+        for (int i = 0; i < argCount; i++) {
+            args.add(0, state.popStack()); // Reverse order
+        }
+
+        // For now, just push null result
+        // Full implementation would look up static method in class metadata and execute
+        state.pushStack(null);
+    }
+
+    private void executeSuperCall(Instruction instr) throws Exception {
+        // SUPER_CALL: Call parent class method
+        // Stack: [this, arg1, arg2, ...] -> [result]
+        // This requires class hierarchy metadata - placeholder implementation
+
+        if (instr.args == null) {
+            throw new Exception("SUPER_CALL instruction missing args count");
+        }
+
+        int argCount = instr.args;
+
+        // Pop arguments
+        List<Object> args = new ArrayList<>();
+        for (int i = 0; i < argCount; i++) {
+            args.add(0, state.popStack()); // Reverse order
+        }
+
+        // Pop this object
+        Object thisObj = state.popStack();
+
+        if (!(thisObj instanceof ObjectInstance)) {
+            throw new Exception("Cannot call super method on non-object: " + thisObj);
+        }
+
+        // For now, just push null result
+        // Full implementation would look up method in parent class and execute
+        state.pushStack(null);
     }
 }

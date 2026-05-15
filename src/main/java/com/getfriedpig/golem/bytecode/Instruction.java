@@ -17,9 +17,15 @@ public class Instruction {
     public String method;            // For NATIVE_CALL
     public String namespace;         // For NATIVE_CALL (e.g., "Entity", "Player")
     public String className;         // For NATIVE_CALL (e.g., "EntityUtils", "PlayerManager")
-    public String property;          // For OBJECT_GET, OBJECT_SET
+    public String property;          // For OBJECT_GET, OBJECT_SET, PROP_GET, PROP_SET
     public String id;                // For CHECKPOINT
     public Integer size;             // For ARRAY_NEW
+    public Integer classRef;         // For CLASS_DEF, NEW (class id)
+    public Integer methodRef;        // For METHOD_CALL, STATIC_CALL, SUPER_CALL (method id)
+    public String visibility;        // For properties and methods (public | private)
+    public Boolean isStatic;         // For METHOD_CALL, STATIC_CALL
+    public Boolean isGetter;         // For properties and method declarations
+    public Boolean isSetter;         // For properties and method declarations
 
     public static Instruction fromJson(JsonObject json) {
         Instruction instr = new Instruction();
@@ -37,6 +43,12 @@ public class Instruction {
         if (json.has("property")) instr.property = json.get("property").getAsString();
         if (json.has("id")) instr.id = json.get("id").getAsString();
         if (json.has("size")) instr.size = json.get("size").getAsInt();
+        if (json.has("classRef")) instr.classRef = json.get("classRef").getAsInt();
+        if (json.has("methodRef")) instr.methodRef = json.get("methodRef").getAsInt();
+        if (json.has("visibility")) instr.visibility = json.get("visibility").getAsString();
+        if (json.has("isStatic")) instr.isStatic = json.get("isStatic").getAsBoolean();
+        if (json.has("isGetter")) instr.isGetter = json.get("isGetter").getAsBoolean();
+        if (json.has("isSetter")) instr.isSetter = json.get("isSetter").getAsBoolean();
         
         return instr;
     }

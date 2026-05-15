@@ -8,6 +8,7 @@ import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
 import com.hypixel.hytale.math.vector.Vector3d;
+import com.hypixel.hytale.server.core.modules.collision.CollisionModule;
 import com.hypixel.hytale.server.core.modules.entity.component.HeadRotation;
 import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
@@ -110,7 +111,7 @@ public class GolemMovementApplyingSystem extends EntityTickingSystem<EntityStore
         // Rotation is instant with cardinal directions
         state.isRotating = false;
         state.movementTime = 0f;
-        
+
         float newYaw = getYawFromCardinalDirection(state.currentDirectionIndex);
         
         // Update HeadRotation (look direction)

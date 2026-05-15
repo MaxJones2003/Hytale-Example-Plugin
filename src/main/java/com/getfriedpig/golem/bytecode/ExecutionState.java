@@ -34,6 +34,9 @@ public class ExecutionState {
     // Current function being executed
     public int currentFunctionId = 0;
 
+    // Current 'this' object reference (for instance methods)
+    public ObjectInstance thisObject = null;
+
     // Whether execution is paused
     public boolean paused = false;
 
@@ -59,11 +62,20 @@ public class ExecutionState {
         public int functionId;
         public int returnPc;
         public Map<String, Object> locals;
+        public ObjectInstance thisObject;  // For method calls
 
         public CallFrame(int functionId, int returnPc) {
             this.functionId = functionId;
             this.returnPc = returnPc;
             this.locals = new HashMap<>();
+            this.thisObject = null;
+        }
+
+        public CallFrame(int functionId, int returnPc, ObjectInstance thisObject) {
+            this.functionId = functionId;
+            this.returnPc = returnPc;
+            this.locals = new HashMap<>();
+            this.thisObject = thisObject;
         }
     }
 
@@ -144,6 +156,7 @@ public class ExecutionState {
         ExecutionState copy = new ExecutionState();
         copy.pc = this.pc;
         copy.currentFunctionId = this.currentFunctionId;
+        copy.thisObject = this.thisObject;
         copy.stack = new ArrayList<>(this.stack);
         copy.locals = new HashMap<>(this.locals);
         copy.globals = new HashMap<>(this.globals);
@@ -173,6 +186,7 @@ public class ExecutionState {
         ExecutionState clone = new ExecutionState();
         clone.pc = this.pc;
         clone.currentFunctionId = this.currentFunctionId;
+        clone.thisObject = this.thisObject;
         clone.stack = new ArrayList<>(this.stack);
         clone.locals = new HashMap<>(this.locals);
         clone.globals = new HashMap<>(this.globals);

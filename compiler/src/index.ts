@@ -69,9 +69,6 @@ declare namespace Math {
       throw new Error(`Compilation errors:\n${errors}`);
     }
 
-    // Print AST structure
-    this.printASTStructure(sourceFile);
-
     // Transform AST to bytecode
     const transformer = new BytecodeTransformer();
     const bytecode = transformer.transform(sourceFile);
@@ -149,7 +146,6 @@ declare namespace Math {
       200: 'ObjectLiteralExpression',
     };
     return names[kind] || `SyntaxKind(${kind})`;
-  }
   }
 }
 

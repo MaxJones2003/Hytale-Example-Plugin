@@ -8,6 +8,7 @@ import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
 import com.hypixel.hytale.math.vector.Vector3d;
+import com.hypixel.hytale.server.core.modules.collision.CollisionModule;
 import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.jspecify.annotations.NonNull;
@@ -96,6 +97,11 @@ public class GolemCommandProcessingSystem extends EntityTickingSystem<EntityStor
                 state.activeCommand = null;
             }
         }
+    }
+
+    private boolean validatePosition(Vector3d position) {
+        CollisionModule cm = CollisionModule.get();
+        cm.validatePosition(p)
     }
 
     /**
